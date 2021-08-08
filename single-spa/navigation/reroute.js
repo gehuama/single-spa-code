@@ -1,5 +1,7 @@
 import { BOOTSTRAPPING, getAppChanges, LOADED_SOURCE_CODE, MOUNTED, NOT_BOOTSTRAPPED, NOT_LOADED, NOT_MOUNTED, shouldBeActive, UNMOUNTING } from "../application/app.helper.js";
 import { started } from "../start.js";
+// import "./navigation-events.js";
+import { capturedEventsListeners } from "./navigation-events.js";
 
 // 将数组方法转化成链式 即将数组拍平
 function flattenFnArray(fns) { // vue3 路由钩子的组合 koa中的组合 redux中的组合
@@ -75,7 +77,11 @@ function tryBootstrapAndMount(app, unmountPromises) {
     return Promise.resolve().then(() => {
         if (shouldBeActive(app)) {
             // 先启动，启动完等它卸载完成，卸载完成再挂载
-            return toBootstrapPromise(app).then(app => unmountPromises.then(() => toMountPromise(app)));
+            return toBootstrapPromise(app).then(app => unmountPromises.then(() =>{
+                console.log("触发hashchange")
+                capturedEventsListeners.hashchange.forEach(item=>item())
+                return toMountPromise(app)
+            }));
         }
     });
 }
