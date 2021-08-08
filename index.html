@@ -1,72 +1,72 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="en">
-        
-        <title>single-spa-源码</title>
-    </head>
-    <body>
-        <!--切换导航加载不同的应用-->
-        <a href="#/a">a应用</a>
-        <a href="#/b">b应用</a>
-        <!--umd 一种模块规范 会在 window上挂载 singleSpa 属性 同时支持amd es6-->
-        <script src="https://cdn.bootcdn.net/ajax/libs/single-spa/5.9.3/umd/single-spa.min.js"></script>
-        <!--源码中single-spa 用的是rollup 打包-->
-        <script type="module">
-            import {registerApplication, start} from "./single-spa/single-spa.js" 
-            // 接入协议
-            let app1 ={
-                bootstrap:[ // 只执行一次，加载应用，不需要每次重复加载
-                    async (customProps)=>{ // koa中的中间件 vueRouter4 中间件 依次执行
-                        await new Promise((resolve)=>{
-                            setTimeout(()=>{
-                                console.log("app1 启动1")
-                                resolve();
-                            },3000)
-                        });
-                    },
-                    async ()=>{
-                        console.log("app1 启动2")
-                    }],
-                mount: async ()=>{
-                    console.log("app1 mount")
+
+<head>
+    <meta charset="en">
+
+    <title>single-spa-源码</title>
+</head>
+
+<body>
+    <!--切换导航加载不同的应用-->
+    <a href="#/a">a应用</a>
+    <a href="#/b">b应用</a>
+    <!--umd 一种模块规范 会在 window上挂载 singleSpa 属性 同时支持amd es6-->
+    <!-- <script src="https://cdn.bootcdn.net/ajax/libs/single-spa/5.9.3/umd/single-spa.min.js"></script> -->
+    <!--源码中single-spa 用的是rollup 打包-->
+    <script type="module">
+        import { registerApplication, start } from "./single-spa/single-spa.js"
+        // 接入协议
+        let app1 = {
+            bootstrap: [ // 只执行一次，加载应用，不需要每次重复加载
+                async (customProps) => { // koa中的中间件 vueRouter4 中间件 依次执行
+                    console.log("app1 启动1", customProps)
                 },
-                unmount: async ()=>{
-                    console.log("app1 unmount")
-                }
-            };
-            let app2 ={
-                bootstrap:[
-                    async ()=>{
-                        console.log("app2 启动-1")
-                    },
-                    async ()=>{
-                        console.log("app2 启动-2")
-                    }],
-                mount: async ()=>{
-                    console.log("app2 mount")
-                },
-                unmount: async ()=>{
-                    console.log("app2 unmount")
-                }
+                async () => {
+                    console.log("app1 启动2")
+                }],
+            mount: async (customProps) => {
+                console.log("app1 mount")
+            },
+            unmount: async (customProps) => {
+                console.log("app1 unmount")
             }
-            
-            const customProps = {a:1};
-            // 注册微应用
-            registerApplication(
-                "app1", // 这个名字可以用于过滤，防止加载重复的应用
-                async() => app1,
-                location=>location.hash === '#/a', // 路径匹配到后会加载应用
-                customProps, // 自定义属性
-            );
-            // 注册微应用
-            registerApplication(
-                "app2", // 这个名字可以用于过滤，防止加载重复的应用
-                async() => app2,
-                location=>location.hash === '#/b', // 路径匹配到后会加载应用
-                customProps, // 自定义属性
-            );
-            start();
-        </script>
-    </body>
+        };
+        let app2 = {
+            bootstrap: [
+                async () => {
+                    console.log("app2 启动-1")
+                },
+                async () => {
+                    console.log("app2 启动-2")
+                }],
+            mount: async () => {
+                console.log("app2 mount")
+            },
+            unmount: async () => {
+                console.log("app2 unmount")
+            }
+        }
+
+        const customProps = { a: 1 };
+        // 注册微应用
+        registerApplication(
+            "app1", // 这个名字可以用于过滤，防止加载重复的应用
+            async () => { return app1 },
+            location => location.hash === '#/a', // 路径匹配到后会加载应用
+            customProps, // 自定义属性
+        );
+        // 注册微应用
+        registerApplication(
+            "app2", // 这个名字可以用于过滤，防止加载重复的应用
+            async () => { return app2 },
+            location => location.hash === '#/b', // 路径匹配到后会加载应用
+            customProps, // 自定义属性
+        );
+
+        start();
+
+    </script>
+</body>
+
 </html>

@@ -1,3 +1,7 @@
+import { reroute } from "./navigation/reroute.js";
+
+export let started = false;
 export function start(){
-    console.log("测试")
+    started = true; // 开始启动了
+    reroute();
 }
